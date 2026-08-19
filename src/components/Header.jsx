@@ -1,5 +1,5 @@
 // src/components/Header.jsx
-
+import { Link } from 'react-router-dom'
 import logo from '../assets/images/muscle_icon.webp'
 import './Header.css'
 
@@ -17,9 +17,9 @@ export default function Header() {
       </div>
 
       <nav className="nav nav-right">
-        <a href="/">Home</a>
-        <a href="/choose-workout">Choose Workout</a>
-        <a href="/signup">Sign Up</a>
+        <Link to="/">Home</Link>
+        <Link to="/choose-workout">Choose Workout</Link>
+        <Link to="/signup">Sign Up</Link>
       </nav>
     </header>
   )
