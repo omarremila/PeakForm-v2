@@ -1,37 +1,34 @@
-#root {
-
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+.homepage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
   text-align: center;
+  background-color: #071a2b;
+  color: white;
 }
-html, body {
+
+.homepage h1 {
   margin: 0;
-  padding: 0;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.438);
-  backdrop-filter: blur(10px); /* Optional: adds a blur effect to the background */
-
-  color: white; /* So text is visible */
+  font-size: 4rem;
 }
 
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.homepage p {
+  max-width: 500px;
+  color: #c9d7df;
+  font-size: 1.1rem;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-  
+.homepage button {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  background-color: #63d8d2;
+  color: #071a2b;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
 }

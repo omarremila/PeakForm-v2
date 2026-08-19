@@ -1,0 +1,75 @@
+/* Header.css */
+
+/* Fixed header across the top of the website */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+
+  width: 100%;
+  height: 100px;
+  padding: 0 2rem;
+  box-sizing: border-box;
+
+  /* Places branding left and navigation right */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background-color: rgba(8, 5, 13, 0.95);
+  border-bottom: 1px solid #842cff;
+  box-shadow: 0 0 500px rgba(132, 44, 255, 0.35);
+}
+
+/* Keeps the title and muscle icon together */
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Muscle image size */
+.muscle-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+/* PeakForm Coach title */
+.header-text {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 400;
+
+  /* Purple-to-blue text gradient */
+  color: rgb(208, 38, 249);
+  background: linear-gradient(
+    180deg,
+    rgb(208, 38, 249),
+    rgb(45, 181, 228)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Navigation container */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+/* Navigation links */
+.nav a {
+  color: rgb(45, 181, 228);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+/* Navigation link when hovered */
+.nav a:hover {
+  color: white;
+}
