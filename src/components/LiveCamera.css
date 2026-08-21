@@ -1,0 +1,90 @@
+/* LiveCamera.css */
+
+.live-camera {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.live-camera-stage {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 4 / 3;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  border: 1px solid rgba(132, 44, 255, 0.4);
+  background-color: #000;
+}
+
+.live-camera-video,
+.live-camera-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Mirror the self-view; landmarks are drawn in raw (unmirrored) video
+     coordinates, so flipping video and canvas together keeps them aligned. */
+  transform: scaleX(-1);
+}
+
+.live-camera-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  color: #f5f0ff;
+  background-color: rgba(8, 5, 13, 0.75);
+}
+
+.live-camera-error {
+  flex-direction: column;
+  gap: 0.75rem;
+  color: #ff8787;
+}
+
+.live-camera-overlay button,
+.live-camera-controls button {
+  padding: 0.6rem 1.4rem;
+  border: 1px solid rgb(45, 181, 228);
+  border-radius: 0.5rem;
+  background-color: rgba(45, 181, 228, 0.12);
+  color: #f5f0ff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.live-camera-overlay button:hover,
+.live-camera-controls button:hover {
+  background-color: rgba(45, 181, 228, 0.25);
+}
+
+.live-camera-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.live-camera-stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.live-camera-reps {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: rgb(45, 181, 228);
+}
+
+.live-camera-feedback {
+  min-height: 1.5em;
+  color: #c9b8e0;
+}
