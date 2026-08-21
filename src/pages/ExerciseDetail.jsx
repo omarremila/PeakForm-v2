@@ -20,6 +20,17 @@ export default function ExerciseDetail() {
   return (
     <div style={{ padding: '2rem 1rem' }}>
       <h2 style={{ textAlign: 'center' }}>Squat</h2>
+      <p
+        style={{
+          maxWidth: 480,
+          margin: '0 auto 1.5rem',
+          textAlign: 'center',
+          color: '#c9b8e0',
+        }}
+      >
+        Stand a few meters back so your hips, knees, and ankles are all visible in frame, then
+        press Start Camera and begin squatting. You'll get a voice cue after each rep.
+      </p>
       <LiveCamera exerciseId={exerciseId} />
     </div>
   );
