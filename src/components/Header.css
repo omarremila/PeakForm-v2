@@ -62,11 +62,40 @@
   white-space: nowrap;
 }
 
+
 /* Navigation links */
 .nav a {
   color: rgb(45, 181, 228);
   text-decoration: none;
   transition: color 0.3s ease;
+}
+ 
+
+/* Below this width the logo + 3 nav links no longer fit on one row --
+   stack them instead of letting the nav overflow off-screen. */
+@media (max-width: 640px) {
+  .header {
+    height: auto;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.85rem 1.25rem;
+  }
+
+  .header-text {
+    font-size: 1.4rem;
+  }
+
+  .muscle-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .nav {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
 }
 
 /* Navigation link when hovered */

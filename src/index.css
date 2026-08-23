@@ -23,8 +23,14 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  padding-top: 80px;
+  padding-top: 100px; 
   background-color: #08050d;
+}
+/* Header switches to a taller, two-row layout below 640px (see Header.css). */
+@media (max-width: 640px) {
+  body {
+    padding-top: 116px;
+  }
 }
 
 #root {
