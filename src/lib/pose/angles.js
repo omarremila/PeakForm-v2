@@ -27,6 +27,12 @@ export function getLandmark(landmarks, index) {
   return point && point.visibility >= MIN_VISIBILITY ? point : null;
 }
 
+// Raw visibility score for a landmark (0 if missing), used to compare
+// how well-seen one side of the body is versus the other.
+export function getVisibility(landmarks, index) {
+  return landmarks[index]?.visibility ?? 0;
+}
+
 // Exponential moving average smoothing across a landmarks array, to cut
 // down on frame-to-frame jitter before angles are computed from them.
 export function createLandmarkSmoother(alpha = 0.5) {

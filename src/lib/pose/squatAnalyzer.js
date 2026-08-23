@@ -1,6 +1,6 @@
 // src/lib/pose/squatAnalyzer.js
 import { POSE_LANDMARKS } from '../../constants/pose';
-import { getLandmark, angleAt } from './angles';
+import { getLandmark, getVisibility, angleAt } from './angles';
 
 // Knee angle (hip-knee-ankle) thresholds, in degrees, that drive the
 // up/down phase state machine. A gap between them (hysteresis) stops a
@@ -15,47 +15,52 @@ const GOOD_DEPTH_ANGLE = 100;
 // bottom of the rep, the torso is pitching too far forward.
 const MIN_TORSO_ANGLE = 45;
 
-// Knees should stay roughly as wide as the ankles; if they pull much
-// narrower than that, that's valgus (knees caving in).
-const VALGUS_RATIO = 0.8;
+// Picks whichever side (left or right) is currently better-seen by the
+// camera, so the analyzer works whether the user's left or right side
+// faces the camera. Returns null if neither side is visible at all, in
+// which case the caller keeps using whichever side it was already on.
+function pickBetterSide(landmarks) {
+  const leftScore =
+    getVisibility(landmarks, POSE_LANDMARKS.LEFT_HIP) +
+    getVisibility(landmarks, POSE_LANDMARKS.LEFT_KNEE) +
+    getVisibility(landmarks, POSE_LANDMARKS.LEFT_ANKLE) +
+    getVisibility(landmarks, POSE_LANDMARKS.LEFT_SHOULDER);
+  const rightScore =
+    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_HIP) +
+    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_KNEE) +
+    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_ANKLE) +
+    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_SHOULDER);
+
+  if (leftScore === 0 && rightScore === 0) return null;
+  return rightScore > leftScore ? 'RIGHT' : 'LEFT';
+}
 
 export function createSquatAnalyzer() {
   let phase = 'up';
   let repCount = 0;
   let minKneeAngleInRep = Infinity;
   let minTorsoAngleInRep = Infinity;
-  let valgusFlaggedInRep = false;
+  let activeSide = 'LEFT';
 
   function update(landmarks) {
-    const leftHip = getLandmark(landmarks, POSE_LANDMARKS.LEFT_HIP);
-    const leftKnee = getLandmark(landmarks, POSE_LANDMARKS.LEFT_KNEE);
-    const leftAnkle = getLandmark(landmarks, POSE_LANDMARKS.LEFT_ANKLE);
-    const leftShoulder = getLandmark(landmarks, POSE_LANDMARKS.LEFT_SHOULDER);
-    const rightKnee = getLandmark(landmarks, POSE_LANDMARKS.RIGHT_KNEE);
-    const rightAnkle = getLandmark(landmarks, POSE_LANDMARKS.RIGHT_ANKLE);
+    // Only reconsider which side to track while standing between reps, so
+    // a single rep's angle tracking never switches sides partway through.
+    if (phase === 'up') {
+      activeSide = pickBetterSide(landmarks) ?? activeSide;
+    }
 
-    const kneeAngle = angleAt(leftHip, leftKnee, leftAnkle);
-    const torsoAngle = angleAt(leftShoulder, leftHip, leftKnee);
+    const hip = getLandmark(landmarks, POSE_LANDMARKS[`${activeSide}_HIP`]);
+    const knee = getLandmark(landmarks, POSE_LANDMARKS[`${activeSide}_KNEE`]);
+    const ankle = getLandmark(landmarks, POSE_LANDMARKS[`${activeSide}_ANKLE`]);
+    const shoulder = getLandmark(landmarks, POSE_LANDMARKS[`${activeSide}_SHOULDER`]);
+
+    const kneeAngle = angleAt(hip, knee, ankle);
+    const torsoAngle = angleAt(shoulder, hip, knee);
 
     const events = [];
 
     if (kneeAngle == null) {
-      return { phase, repCount, kneeAngle: null, events };
-    }
-
-    // Valgus check: only meaningful with both knees/ankles visible.
-    if (leftKnee && rightKnee && leftAnkle && rightAnkle) {
-      const ankleWidth = Math.abs(leftAnkle.x - rightAnkle.x);
-      const kneeWidth = Math.abs(leftKnee.x - rightKnee.x);
-      if (
-        phase === 'down' &&
-        ankleWidth > 0 &&
-        kneeWidth < ankleWidth * VALGUS_RATIO &&
-        !valgusFlaggedInRep
-      ) {
-        valgusFlaggedInRep = true;
-        events.push({ code: 'KNEE_VALGUS', message: 'Push your knees out' });
-      }
+      return { phase, repCount, kneeAngle: null, torsoAngle: null, side: activeSide, events };
     }
 
     if (phase === 'up' && kneeAngle < DOWN_THRESHOLD) {
@@ -78,16 +83,12 @@ export function createSquatAnalyzer() {
         if (minTorsoAngleInRep < MIN_TORSO_ANGLE) {
           events.push({ code: 'LEANING_FORWARD', message: 'Keep your chest up' });
         }
-        if (
-          events.length === 0 ||
-          (!events.some((e) => e.code !== 'REP_COUNTED') && !valgusFlaggedInRep)
-        ) {
+        if (events.length === 0) {
           events.push({ code: 'REP_COUNTED', message: `Rep ${repCount}` });
         }
 
         minKneeAngleInRep = Infinity;
         minTorsoAngleInRep = Infinity;
-        valgusFlaggedInRep = false;
       }
     }
 
@@ -99,7 +100,7 @@ export function createSquatAnalyzer() {
     repCount = 0;
     minKneeAngleInRep = Infinity;
     minTorsoAngleInRep = Infinity;
-    valgusFlaggedInRep = false;
+    activeSide = 'LEFT';
   }
 
   return { update, reset };

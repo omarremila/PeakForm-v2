@@ -28,9 +28,10 @@ export default function ExerciseDetail() {
           color: '#c9b8e0',
         }}
       >
-        Stand a few meters back so your hips, knees, and ankles are all visible in frame, then
-        press Start Camera and begin squatting. You'll get a voice cue after each rep.
-      </p>
+     Turn so your <strong>left side</strong> faces the camera, standing a few feet back so
+  your shoulder, hip, knee, and ankle are all visible in profile. Press Start Camera and
+  begin squatting.
+</p>
       <LiveCamera exerciseId={exerciseId} />
     </div>
   );
