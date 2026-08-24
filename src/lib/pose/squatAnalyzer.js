@@ -1,6 +1,6 @@
 // src/lib/pose/squatAnalyzer.js
 import { POSE_LANDMARKS } from '../../constants/pose';
-import { getLandmark, getVisibility, angleAt } from './angles';
+import { getLandmark, angleAt, pickBetterSide } from './angles';
 
 // Knee angle (hip-knee-ankle) thresholds, in degrees, that drive the
 // up/down phase state machine. A gap between them (hysteresis) stops a
@@ -15,25 +15,7 @@ const GOOD_DEPTH_ANGLE = 100;
 // bottom of the rep, the torso is pitching too far forward.
 const MIN_TORSO_ANGLE = 45;
 
-// Picks whichever side (left or right) is currently better-seen by the
-// camera, so the analyzer works whether the user's left or right side
-// faces the camera. Returns null if neither side is visible at all, in
-// which case the caller keeps using whichever side it was already on.
-function pickBetterSide(landmarks) {
-  const leftScore =
-    getVisibility(landmarks, POSE_LANDMARKS.LEFT_HIP) +
-    getVisibility(landmarks, POSE_LANDMARKS.LEFT_KNEE) +
-    getVisibility(landmarks, POSE_LANDMARKS.LEFT_ANKLE) +
-    getVisibility(landmarks, POSE_LANDMARKS.LEFT_SHOULDER);
-  const rightScore =
-    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_HIP) +
-    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_KNEE) +
-    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_ANKLE) +
-    getVisibility(landmarks, POSE_LANDMARKS.RIGHT_SHOULDER);
-
-  if (leftScore === 0 && rightScore === 0) return null;
-  return rightScore > leftScore ? 'RIGHT' : 'LEFT';
-}
+const SIDE_JOINTS = ['HIP', 'KNEE', 'ANKLE', 'SHOULDER'];
 
 export function createSquatAnalyzer() {
   let phase = 'up';
@@ -46,7 +28,7 @@ export function createSquatAnalyzer() {
     // Only reconsider which side to track while standing between reps, so
     // a single rep's angle tracking never switches sides partway through.
     if (phase === 'up') {
-      activeSide = pickBetterSide(landmarks) ?? activeSide;
+      activeSide = pickBetterSide(landmarks, SIDE_JOINTS, POSE_LANDMARKS) ?? activeSide;
     }
 
     const hip = getLandmark(landmarks, POSE_LANDMARKS[`${activeSide}_HIP`]);

@@ -32,7 +32,18 @@ export function getLandmark(landmarks, index) {
 export function getVisibility(landmarks, index) {
   return landmarks[index]?.visibility ?? 0;
 }
+export function pickBetterSide(landmarks, joints, POSE_LANDMARKS) {
+  let leftScore = 0;
+  let rightScore = 0;
 
+  for (const joint of joints) {
+    leftScore += getVisibility(landmarks, POSE_LANDMARKS[`LEFT_${joint}`]);
+    rightScore += getVisibility(landmarks, POSE_LANDMARKS[`RIGHT_${joint}`]);
+  }
+
+  if (leftScore === 0 && rightScore === 0) return null;
+  return rightScore > leftScore ? 'RIGHT' : 'LEFT';
+}
 // Exponential moving average smoothing across a landmarks array, to cut
 // down on frame-to-frame jitter before angles are computed from them.
 export function createLandmarkSmoother(alpha = 0.5) {
