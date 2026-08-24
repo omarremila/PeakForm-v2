@@ -1,5 +1,6 @@
 // src/components/Header.jsx
 import { Link } from 'react-router-dom'
+import { NeonText } from '@volt-ui/react'
 import logo from '../assets/images/muscle_icon.webp'
 import './Header.css'
 
@@ -7,7 +8,15 @@ export default function Header() {
   return (
     <header className="header">
       <div className="header-logo">
-        <h1 className="header-text">PeakForm Coach</h1>
+      <h1 className="header-title">
+          <NeonText
+            text="PeakForm Coach"
+            color="#d026f9"
+            glow={10}
+            flicker
+            className="header-neon-text"
+          />
+        </h1>
 
         <img
           src={logo}

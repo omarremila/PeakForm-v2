@@ -36,22 +36,27 @@
   object-fit: contain;
 }
 
-/* PeakForm Coach title */
-.header-text {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: 400;
+/* Header.css */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600&display=swap');
 
-  /* Purple-to-blue text gradient */
-  color: rgb(208, 38, 249);
-  background: linear-gradient(
-    180deg,
-    rgb(208, 38, 249),
-    rgb(45, 181, 228)
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.header-title {
+  margin: 0;
+  line-height: 1;
+}
+
+/* PeakForm Coach title -- NeonText (from @volt-ui/react) handles the glow
+   itself via inline styles (color/text-shadow/flicker), but its own
+   Tailwind utility classes (text-6xl font-black tracking-wider) don't do
+   anything here since this project doesn't have Tailwind configured. This
+   className is what actually sizes it. */
+
+.header-neon-text {
+   font-family: 'Dancing Script', cursive;
+  font-size: 3rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: rgb(45, 181, 228) !important; /* black letters, glow stays purple */
 }
 
 /* Navigation container */
@@ -62,14 +67,17 @@
   white-space: nowrap;
 }
 
-
 /* Navigation links */
 .nav a {
   color: rgb(45, 181, 228);
   text-decoration: none;
   transition: color 0.3s ease;
 }
- 
+
+/* Navigation link when hovered */
+.nav a:hover {
+  color: white;
+}
 
 /* Below this width the logo + 3 nav links no longer fit on one row --
    stack them instead of letting the nav overflow off-screen. */
@@ -96,9 +104,4 @@
     justify-content: space-between;
     gap: 0.5rem;
   }
-}
-
-/* Navigation link when hovered */
-.nav a:hover {
-  color: white;
 }

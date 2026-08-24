@@ -92,7 +92,7 @@ export function createSquatAnalyzer() {
       }
     }
 
-    return { phase, repCount, kneeAngle, events };
+    return { phase, repCount, kneeAngle, torsoAngle, side: activeSide, events };
   }
 
   function reset() {
