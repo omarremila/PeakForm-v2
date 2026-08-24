@@ -1,21 +1,23 @@
 /* Header.css */
 
-/* Fixed header across the top of the website */
+/* Sticky header: LockedIn centered on top, nav links split to the left
+   and right edges below it. */
 .header {
-  position: fixed;
+  /* sticky (not fixed) so it stays pinned on scroll without needing to
+     leave matching top padding on <body> -- it never overlaps content
+     below it, even as its own height changes with the logo/nav layout. */
+  position: sticky;
   top: 0;
-  left: 0;
   z-index: 1000;
 
   width: 100%;
-  height: 100px;
-  padding: 0 2rem;
+  padding: 0.6rem 2rem;   /* was 1rem 2rem */
   box-sizing: border-box;
 
-  /* Places branding left and navigation right */
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.35rem;            /* was 0.6rem */
 
   background-color: rgba(8, 5, 13, 0.95);
   border-bottom: 1px solid #842cff;
@@ -39,16 +41,16 @@
 
 /* Muscle image size */
 .muscle-icon {
-  width: 80px;
-  height: 80px;
+  width: 60px;    /* was 80px */
+  height: 60px;   /* was 80px */
   object-fit: contain;
 }
 
 /* LockedIn title */
 .header-text {
   margin: 0;
-  font-size: 2rem;
-  font-weight: 400;
+  font-size: 1.8rem;   /* was 2rem */
+  font-weight: 400;  
 
   /* Purple-to-blue text gradient */
   color: rgb(208, 38, 249);
@@ -62,11 +64,13 @@
   -webkit-text-fill-color: transparent;
 }
 
-/* Navigation container */
+/* Navigation container -- spans the full header width so the two links can
+   sit at the left and right edges below the centered logo. */
 .nav {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  width: 100%;
   white-space: nowrap;
 }
 
@@ -82,29 +86,17 @@
   color: white;
 }
 
-/* Below this width the logo + nav links no longer fit on one row --
-   stack them instead of letting the nav overflow off-screen. */
 @media (max-width: 640px) {
   .header {
-    height: auto;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.6rem;
-    padding: 0.85rem 1.25rem;
+    padding: 0.5rem 1.25rem;   /* was 0.85rem 1.25rem */
   }
 
   .header-text {
-    font-size: 1.4rem;
+    font-size: 1.25rem;   /* was 1.4rem */
   }
 
   .muscle-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  .nav {
-    width: 100%;
-    justify-content: space-between;
-    gap: 0.5rem;
+     width: 36px;    /* was 44px */
+    height: 36px;   /* was 44px */
   }
 }
