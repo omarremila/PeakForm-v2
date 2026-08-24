@@ -8,8 +8,7 @@ const EXERCISES = [
   { id: 'pushups', name: 'Push-Ups', muscleGroup: 'Chest' },
   { id: 'lunges', name: 'Lunges', muscleGroup: 'Legs' },
   { id: 'shoulder-press', name: 'Shoulder Press', muscleGroup: 'Shoulders' },
-  { id: 'deadlift', name: 'Deadlift', muscleGroup: 'Back' },
-  { id: 'bench-press', name: 'Bench Press', muscleGroup: 'Chest' },
+  
 ];
 
 export default function ChooseWorkout() {

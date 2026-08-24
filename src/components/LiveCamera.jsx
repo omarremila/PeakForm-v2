@@ -3,14 +3,33 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { usePoseDetection } from '../hooks/usePoseDetection';
 import { createLandmarkSmoother } from '../lib/pose/angles';
 import { createSquatAnalyzer } from '../lib/pose/squatAnalyzer';
+import { createBicepCurlAnalyzer } from '../lib/pose/bicepCurlAnalyzer';
+import { createPushupAnalyzer } from '../lib/pose/pushupAnalyzer';
+import { createLungeAnalyzer } from '../lib/pose/lungeAnalyzer';
+import { createShoulderPressAnalyzer } from '../lib/pose/shoulderPressAnalyzer';
 import { createVoiceFeedback } from '../lib/voiceFeedback';
 import { POSE_LANDMARKS } from '../constants/pose';
 import './LiveCamera.css';
 
 const ANALYZERS = {
   squat: createSquatAnalyzer,
+  'bicep-curl': createBicepCurlAnalyzer,
+  pushups: createPushupAnalyzer,
+  lunges: createLungeAnalyzer,
+  'shoulder-press': createShoulderPressAnalyzer,
 };
 
+// Each analyzer reports its own primary joint angle under a different key
+// (a squat tracks the knee, a curl tracks the elbow, ...) plus which body
+// landmark that angle is centered on. This lets the overlay draw the right
+// number at the right joint without knowing which exercise is active.
+const PRIMARY_ANGLE_FIELD = {
+  squat: { angleKey: 'kneeAngle', joint: 'KNEE' },
+  'bicep-curl': { angleKey: 'elbowAngle', joint: 'ELBOW' },
+  pushups: { angleKey: 'elbowAngle', joint: 'ELBOW' },
+  lunges: { angleKey: 'kneeAngle', joint: 'KNEE' },
+  'shoulder-press': { angleKey: 'elbowAngle', joint: 'ELBOW' },
+};
 // Draws text that reads correctly despite the canvas being mirrored via
 // CSS (transform: scaleX(-1) in LiveCamera.css). Flipping the canvas's own
 // coordinate system locally, just for this one draw call, cancels out that
@@ -23,22 +42,28 @@ function fillMirroredText(ctx, text, x, y) {
   ctx.restore();
 }
 
-function drawAngleOverlay(canvas, landmarks, result) {
-  if (!canvas || result.kneeAngle == null) return;
+function drawAngleOverlay(canvas, landmarks, result, exerciseId) {
+  const primary = PRIMARY_ANGLE_FIELD[exerciseId];
+  if (!canvas || !primary || result[primary.angleKey] == null) return;
 
   const ctx = canvas.getContext('2d');
   const { width, height } = canvas;
   const side = result.side;
 
-  const knee = landmarks[POSE_LANDMARKS[`${side}_KNEE`]];
+  const primaryJoint = landmarks[POSE_LANDMARKS[`${side}_${primary.joint}`]];
   const hip = landmarks[POSE_LANDMARKS[`${side}_HIP`]];
 
   ctx.font = '600 20px "IBM Plex Mono", monospace';
   ctx.textBaseline = 'middle';
 
-  if (knee) {
+  if (primaryJoint) {
     ctx.fillStyle = 'rgb(208, 38, 249)';
-    fillMirroredText(ctx, `${result.kneeAngle.toFixed(0)}°`, knee.x * width - 14, knee.y * height);
+    fillMirroredText(
+      ctx,
+      `${result[primary.angleKey].toFixed(0)}°`,
+      primaryJoint.x * width - 14,
+      primaryJoint.y * height,
+    );
   }
   if (hip && result.torsoAngle != null) {
     ctx.fillStyle = 'rgb(45, 181, 228)';
@@ -75,11 +100,12 @@ export default function LiveCamera({ exerciseId }) {
       // It's a ref object, stable across renders, so it's safe to omit here
       // -- and, since it's declared after this callback, TDZ rules mean it
       // can't be added to the dependency array even if we wanted to.
-      drawAngleOverlay(canvasRef.current, landmarks, result);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [analyzer, smooth, voice],
-  );
+        drawAngleOverlay(canvasRef.current, landmarks, result, exerciseId);
+      },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [analyzer, smooth, voice, exerciseId],
+      );
+ 
 
   const {
     detectionState,
