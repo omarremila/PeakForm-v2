@@ -39,17 +39,17 @@ function usePrefersReducedMotion() {
 
 const FEATURES = [
   {
-    title: 'Live pose tracking',
-    body: 'MediaPipe tracks 33 points on your body through your webcam, right in the browser — no wearables, nothing uploaded.',
-  },
-  {
-    title: 'Spoken feedback',
-    body: "Miss depth, lean too far forward, let your knees cave in — you'll hear about it the moment it happens, not after the set.",
-  },
-  {
-    title: 'Automatic rep counting',
-    body: 'No tapping a screen between reps. PeakForm counts as you move and grades each one on the way back up.',
-  },
+  title: 'Live pose tracking',
+  body: 'MediaPipe tracks 33 points across your body using just your webcam, giving you real-time form tracking right in your browser—no wearables, no extra setup, and nothing gets uploaded.',
+},
+{
+  title: 'Spoken feedback',
+  body: "Miss your depth, lean too far forward, or let your knees cave in? PeakForm calls it out the moment it happens, so you can fix your form right away instead of finding out after the set.",
+},
+{
+  title: 'Automatic rep counting',
+  body: 'Forget tapping your screen or trying to keep count mid-set. PeakForm automatically counts every rep as you move and checks your form on the way back up.',
+},
 ];
 
 const STEPS = [
@@ -94,8 +94,9 @@ export default function Home() {
             <span className="home-title-line home-title-accent">Live, on camera.</span>
           </h1>
           <p className="home-subtitle">
-            PeakForm watches your reps through your webcam, counts them, and tells you out
-            loud what to fix &mdash; depth, lean, tempo &mdash; the moment it happens.
+            PeakForm watches your reps through your webcam, counts them in real time, 
+            and gives you instant voice feedback on your depth, posture, 
+            and tempo. So you can fix your form right away and make every rep count.
           </p>
           <div className="home-cta-row">
             <Link to="/choose-workout" className="home-cta-primary">
