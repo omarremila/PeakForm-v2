@@ -4,10 +4,9 @@
 
 .home {
   
-  /*--mono: 'JetBrains Mono', ui-monospace, monospace;
-  --display: 'Bricolage Grotesque', system-ui, sans-serif; */
-  --mono:'Dancing Script', ui-cursive, cursive;
-  --display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --display: 'Bricolage Grotesque', system-ui, sans-serif; 
+
   display: flex;
   flex-direction: column;
   gap: 6rem;
