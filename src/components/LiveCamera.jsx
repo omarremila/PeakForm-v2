@@ -8,6 +8,7 @@ import { createPushupAnalyzer } from '../lib/pose/pushupAnalyzer';
 import { createLungeAnalyzer } from '../lib/pose/lungeAnalyzer';
 import { createShoulderPressAnalyzer } from '../lib/pose/shoulderPressAnalyzer';
 import { createVoiceFeedback } from '../lib/voiceFeedback';
+import { getCoachFeedback } from '../lib/aiCoach';
 import { POSE_LANDMARKS } from '../constants/pose';
 import './LiveCamera.css';
 
@@ -30,6 +31,7 @@ const PRIMARY_ANGLE_FIELD = {
   lunges: { angleKey: 'kneeAngle', joint: 'KNEE' },
   'shoulder-press': { angleKey: 'elbowAngle', joint: 'ELBOW' },
 };
+
 // Draws text that reads correctly despite the canvas being mirrored via
 // CSS (transform: scaleX(-1) in LiveCamera.css). Flipping the canvas's own
 // coordinate system locally, just for this one draw call, cancels out that
@@ -91,21 +93,33 @@ export default function LiveCamera({ exerciseId }) {
       if (!analyzer) return;
       const result = analyzer.update(smooth(landmarks));
       setRepCount(result.repCount);
-      for (const event of result.events) {
-        setFeedback(event.message);
-        voice.speak(event.code, event.message);
+
+      // All events on this frame belong to the same just-completed rep
+      // (an analyzer only ever pushes events at the moment a rep finishes),
+      // so they're combined into one AI request instead of firing separate,
+      // possibly-overlapping utterances for each issue.
+      if (result.events.length > 0 && voice.shouldSpeak()) {
+        const codes = result.events.map((event) => event.code);
+        const { events: _events, ...metrics } = result;
+
+        getCoachFeedback({ exerciseId, codes, repCount: result.repCount, metrics }).then(
+          (text) => {
+            setFeedback(text);
+            voice.speakText(text);
+          },
+        );
       }
+
       // canvasRef comes from usePoseDetection(), called below (it needs
       // handleLandmarks as an argument, so it can't be declared first).
       // It's a ref object, stable across renders, so it's safe to omit here
       // -- and, since it's declared after this callback, TDZ rules mean it
       // can't be added to the dependency array even if we wanted to.
-        drawAngleOverlay(canvasRef.current, landmarks, result, exerciseId);
-      },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [analyzer, smooth, voice, exerciseId],
-      );
- 
+      drawAngleOverlay(canvasRef.current, landmarks, result, exerciseId);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [analyzer, smooth, voice, exerciseId],
+  );
 
   const {
     detectionState,

@@ -40,9 +40,19 @@ export function createSquatAnalyzer() {
     const torsoAngle = angleAt(shoulder, hip, knee);
 
     const events = [];
+    let repSummary = null;
+
 
     if (kneeAngle == null) {
-      return { phase, repCount, kneeAngle: null, torsoAngle: null, side: activeSide, events };
+        return {
+        phase,
+        repCount,
+        kneeAngle: null,
+        torsoAngle: null,
+        side: activeSide,
+        events,
+        repSummary,
+      };
     }
 
     if (phase === 'up' && kneeAngle < DOWN_THRESHOLD) {
@@ -58,23 +68,28 @@ export function createSquatAnalyzer() {
       if (kneeAngle > UP_THRESHOLD) {
         phase = 'up';
         repCount += 1;
+        repSummary = {
+          minKneeAngle: Math.round(minKneeAngleInRep),
+          goodDepthAngle: GOOD_DEPTH_ANGLE,
+          minTorsoAngle: minTorsoAngleInRep === Infinity ? null : Math.round(minTorsoAngleInRep),
+          minTorsoAngleThreshold: MIN_TORSO_ANGLE,
+        };
 
         if (minKneeAngleInRep > GOOD_DEPTH_ANGLE) {
-          events.push({ code: 'NOT_DEEP_ENOUGH', message: 'Go lower next rep' });
+          events.push({ code: 'NOT_DEEP_ENOUGH' });
         }
         if (minTorsoAngleInRep < MIN_TORSO_ANGLE) {
-          events.push({ code: 'LEANING_FORWARD', message: 'Keep your chest up' });
+          events.push({ code: 'LEANING_FORWARD' });
         }
         if (events.length === 0) {
-          events.push({ code: 'REP_COUNTED', message: `Rep ${repCount}` });
+          events.push({ code: 'REP_COUNTED' });
         }
 
         minKneeAngleInRep = Infinity;
-        minTorsoAngleInRep = Infinity;
       }
     }
 
-    return { phase, repCount, kneeAngle, torsoAngle, side: activeSide, events };
+    return { phase, repCount, kneeAngle, torsoAngle, side: activeSide, events, repSummary };
   }
 
   function reset() {
